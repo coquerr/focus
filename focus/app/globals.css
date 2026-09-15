@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0c;
+  --surface: #17171b;
+  --surface-raised: #1c1c21;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  --label-primary: rgba(255, 255, 255, 0.96);
+  --label-secondary: rgba(255, 255, 255, 0.6);
+  --label-tertiary: rgba(255, 255, 255, 0.38);
+
+  --accent-blue: #5e7ce2;
+  --accent-green: #34c77b;
+  --accent-amber: #e2a23a;
+  --accent-red: #e2545e;
+  --accent-violet: #a074e8;
+
+  --font-system:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border-subtle: var(--border-subtle);
+
+  --color-label-primary: var(--label-primary);
+  --color-label-secondary: var(--label-secondary);
+  --color-label-tertiary: var(--label-tertiary);
+
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-green: var(--accent-green);
+  --color-accent-amber: var(--accent-amber);
+  --color-accent-red: var(--accent-red);
+  --color-accent-violet: var(--accent-violet);
+
+  --font-sans: var(--font-system);
+}
+
+html {
+  background: var(--background);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--label-primary);
+  font-family: var(--font-system);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
