@@ -8,16 +8,43 @@ import { LargeTitle } from "@/components/ui/LargeTitle";
 import { SubjectCard } from "@/components/topics/SubjectCard";
 import { AddSubjectSheet } from "@/components/topics/AddSubjectSheet";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { db } from "@/lib/db";
+import { ConfirmDialog } from "@/components/settings/ConfirmDialog";
+import { useToast } from "@/components/ui/Toast";
+import { db, type Subject } from "@/lib/db";
 
 export default function SubjectsPage() {
   const [addOpen, setAddOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Subject | null>(null);
+  const { showToast } = useToast();
 
   const subjects = useLiveQuery(() => db.subjects.toArray(), []);
   const topics = useLiveQuery(() => db.topics.toArray(), []);
   const sessions = useLiveQuery(() => db.sessions.toArray(), []);
 
   const isLoading = subjects === undefined || topics === undefined || sessions === undefined;
+
+  async function handleConfirmDelete() {
+    if (!pendingDelete) return;
+    const subjectId = pendingDelete.id!;
+
+    try {
+      await db.transaction("rw", db.subjects, db.topics, db.sessions, async () => {
+        const subjectTopics = await db.topics.where("subjectId").equals(subjectId).toArray();
+        const topicIds = subjectTopics.map((t) => t.id!);
+
+        if (topicIds.length > 0) {
+          await db.sessions.where("topicId").anyOf(topicIds).delete();
+        }
+        await db.topics.where("subjectId").equals(subjectId).delete();
+        await db.subjects.delete(subjectId);
+      });
+      showToast("Предмет удалён");
+    } catch {
+      showToast("Не удалось удалить предмет", "error");
+    } finally {
+      setPendingDelete(null);
+    }
+  }
 
   return (
     <div>
@@ -70,12 +97,23 @@ export default function SubjectsPage() {
               subject={subject}
               topicCount={subjectTopicIds.length}
               hoursLogged={hoursLogged}
+              onDelete={setPendingDelete}
             />
           );
         })}
       </div>
 
       <AddSubjectSheet open={addOpen} onClose={() => setAddOpen(false)} />
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title={`Удалить «${pendingDelete?.name}»?`}
+        message="Все темы и сессии по этому предмету будут удалены безвозвратно."
+        confirmLabel="Удалить"
+        destructive
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 }
