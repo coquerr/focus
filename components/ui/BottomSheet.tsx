@@ -1,7 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useId } from "react";
 import type { ReactNode } from "react";
+import { useSheetContext } from "@/components/ui/SheetContext";
 
 interface BottomSheetProps {
   open: boolean;
@@ -10,6 +12,18 @@ interface BottomSheetProps {
 }
 
 export function BottomSheet({ open, onClose, children }: BottomSheetProps) {
+  const id = useId();
+  const { registerOpen, registerClose } = useSheetContext();
+
+  useEffect(() => {
+    if (open) {
+      registerOpen(id);
+    } else {
+      registerClose(id);
+    }
+    return () => registerClose(id);
+  }, [open, id, registerOpen, registerClose]);
+
   return (
     <AnimatePresence>
       {open && (

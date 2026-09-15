@@ -21,23 +21,33 @@ export default function SubjectsPage() {
   const topics = useLiveQuery(() => db.topics.toArray(), []);
   const sessions = useLiveQuery(() => db.sessions.toArray(), []);
 
-  const isLoading = subjects === undefined || topics === undefined || sessions === undefined;
+  const isLoading =
+    subjects === undefined || topics === undefined || sessions === undefined;
 
   async function handleConfirmDelete() {
     if (!pendingDelete) return;
     const subjectId = pendingDelete.id!;
 
     try {
-      await db.transaction("rw", db.subjects, db.topics, db.sessions, async () => {
-        const subjectTopics = await db.topics.where("subjectId").equals(subjectId).toArray();
-        const topicIds = subjectTopics.map((t) => t.id!);
+      await db.transaction(
+        "rw",
+        db.subjects,
+        db.topics,
+        db.sessions,
+        async () => {
+          const subjectTopics = await db.topics
+            .where("subjectId")
+            .equals(subjectId)
+            .toArray();
+          const topicIds = subjectTopics.map((t) => t.id!);
 
-        if (topicIds.length > 0) {
-          await db.sessions.where("topicId").anyOf(topicIds).delete();
-        }
-        await db.topics.where("subjectId").equals(subjectId).delete();
-        await db.subjects.delete(subjectId);
-      });
+          if (topicIds.length > 0) {
+            await db.sessions.where("topicId").anyOf(topicIds).delete();
+          }
+          await db.topics.where("subjectId").equals(subjectId).delete();
+          await db.subjects.delete(subjectId);
+        },
+      );
       showToast("Предмет удалён");
     } catch {
       showToast("Не удалось удалить предмет", "error");
@@ -70,21 +80,24 @@ export default function SubjectsPage() {
             icon={BookOpen}
             message="Список предметов пока пуст"
             action={
-              <button
+              <motion.button
                 type="button"
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
                 onClick={() => setAddOpen(true)}
                 className="rounded-full bg-accent-blue-bright px-4 py-2 text-[14px] font-medium text-white transition-colors hover:bg-accent-blue-bright-hover"
               >
                 Добавить первый предмет
-              </button>
+              </motion.button>
             }
           />
         )}
 
         {subjects?.map((subject) => {
-          const subjectTopicIds = topics
-            ?.filter((t) => t.subjectId === subject.id)
-            .map((t) => t.id) ?? [];
+          const subjectTopicIds =
+            topics
+              ?.filter((t) => t.subjectId === subject.id)
+              .map((t) => t.id) ?? [];
 
           const hoursLogged =
             (sessions

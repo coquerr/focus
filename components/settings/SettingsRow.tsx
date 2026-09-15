@@ -27,7 +27,7 @@ export function SettingsRow({
   showChevron = true,
   isLast = false,
 }: SettingsRowProps) {
-  const Component = onClick ? motion.button : "div";
+  const Component = onClick ? motion.button : motion.div;
 
   return (
     <Component
