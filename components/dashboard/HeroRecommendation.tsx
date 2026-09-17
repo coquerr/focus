@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import type { Recommendation } from "@/lib/whatToStudy";
+import { vibrate } from "@/lib/haptics";
 
 const reasonHeadline: Record<Recommendation["reason"], string> = {
   overdue: "Пора повторить",
@@ -15,7 +16,9 @@ interface HeroRecommendationProps {
   recommendation: Recommendation;
 }
 
-export function HeroRecommendation({ recommendation }: HeroRecommendationProps) {
+export function HeroRecommendation({
+  recommendation,
+}: HeroRecommendationProps) {
   const { subject, topic } = recommendation;
 
   return (
@@ -41,6 +44,7 @@ export function HeroRecommendation({ recommendation }: HeroRecommendationProps) 
           type="button"
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          onClick={() => vibrate("light")}
           className="mt-5 flex items-center gap-2 rounded-2xl bg-accent-blue-bright px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-accent-blue-bright-hover"
         >
           <Play size={16} fill="currentColor" />

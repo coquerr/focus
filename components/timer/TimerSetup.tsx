@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { BookOpen, ChevronDown, Play } from "lucide-react";
+import { BookOpen, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SubjectSelect } from "@/components/ui/SubjectSelect";
 import { db, type Subject, type Topic } from "@/lib/db";
 
 interface TimerSetupProps {
@@ -28,8 +29,7 @@ export function TimerSetup({ onStart, initialSubjectId, initialTopicId }: TimerS
 
   const hasSubjects = subjects !== undefined && subjects.length > 0;
 
-  function handleSubjectChange(value: string) {
-    const id = value ? Number(value) : null;
+  function handleSubjectChange(id: number) {
     setSubjectId(id);
     setTopicId(null);
   }
@@ -59,53 +59,29 @@ export function TimerSetup({ onStart, initialSubjectId, initialTopicId }: TimerS
           <label className="mb-1.5 block text-[13px] font-medium text-label-secondary">
             Предмет
           </label>
-          <div className="relative">
-            <select
-              value={subjectId ?? ""}
-              onChange={(e) => handleSubjectChange(e.target.value)}
-              className="w-full appearance-none rounded-2xl border border-white/5 bg-surface px-4 py-3.5 text-[16px] text-label-primary outline-none"
-            >
-              <option value="" disabled>
-                Выбери предмет
-              </option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              size={18}
-              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-label-tertiary"
-            />
-          </div>
+          <SubjectSelect
+            options={subjects.map((s) => ({ id: s.id!, name: s.name, color: s.color }))}
+            value={subjectId}
+            onChange={handleSubjectChange}
+            placeholder="Выбери предмет"
+          />
         </div>
 
         <div>
           <label className="mb-1.5 block text-[13px] font-medium text-label-secondary">
             Тема
           </label>
-          <div className="relative">
-            <select
-              value={topicId ?? ""}
-              onChange={(e) => setTopicId(e.target.value ? Number(e.target.value) : null)}
-              disabled={!subjectId || (topics?.length ?? 0) === 0}
-              className="w-full appearance-none rounded-2xl border border-white/5 bg-surface px-4 py-3.5 text-[16px] text-label-primary outline-none disabled:opacity-40"
-            >
-              <option value="" disabled>
-                {subjectId ? "Выбери тему" : "Сначала выбери предмет"}
-              </option>
-              {topics?.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.title}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              size={18}
-              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-label-tertiary"
-            />
-          </div>
+          <SubjectSelect
+            options={(topics ?? []).map((t) => ({
+              id: t.id!,
+              name: t.title,
+              color: selectedSubject?.color ?? "var(--accent-blue)",
+            }))}
+            value={topicId}
+            onChange={setTopicId}
+            placeholder={subjectId ? "Выбери тему" : "Сначала выбери предмет"}
+            disabled={!subjectId || (topics?.length ?? 0) === 0}
+          />
           {subjectId !== null && topics?.length === 0 && (
             <p className="mt-1.5 text-[13px] text-label-tertiary">
               В этом предмете пока нет тем

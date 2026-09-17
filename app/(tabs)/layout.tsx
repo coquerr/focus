@@ -20,10 +20,10 @@ function TabsLayoutContent({ children }: { children: ReactNode }) {
         className="relative mx-auto w-full max-w-md flex-1 overflow-hidden pb-28"
       >
         {children}
-        <motion.div
+                <motion.div
           animate={{ opacity: isSheetOpen ? 1 : 0 }}
           transition={{ duration: 0.22 }}
-          className="pointer-events-none absolute inset-0 bg-black/40"
+          className="pointer-events-none absolute inset-0 bg-black/20"
         />
       </motion.main>
       <TabBar />

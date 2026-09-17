@@ -37,7 +37,7 @@ export async function getTodayStats(): Promise<TodayStats> {
       const subject = subjectById.get(subjectId);
       if (!subject) return null;
       const targetMinutes = subject.targetHours * 60;
-      const progress = targetMinutes > 0 ? Math.min(minutesToday / targetMinutes, 1) : 0;
+            const progress = targetMinutes > 0 ? minutesToday / targetMinutes : 0;
       return { subject, minutesToday, progress };
     })
     .filter((s): s is TodaySubjectProgress => s !== null)

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { DeadlineRow } from "@/components/dashboard/DeadlineRow";
 import { AddDeadlineSheet } from "@/components/dashboard/AddDeadlineSheet";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { vibrate } from "@/lib/haptics";
 import type { Deadline, Subject } from "@/lib/db";
 
 interface DeadlinesWidgetProps {
@@ -25,7 +26,10 @@ export function DeadlinesWidget({ deadlines, subjectById }: DeadlinesWidgetProps
         <motion.button
           type="button"
           whileTap={{ scale: 0.9 }}
-          onClick={() => setAddOpen(true)}
+                    onClick={() => {
+            vibrate("light");
+            setAddOpen(true);
+          }}
           className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-raised"
           aria-label="Добавить дедлайн"
         >

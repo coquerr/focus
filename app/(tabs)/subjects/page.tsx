@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/settings/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
 import { db, type Subject } from "@/lib/db";
+import { vibrate } from "@/lib/haptics";
 
 export default function SubjectsPage() {
   const [addOpen, setAddOpen] = useState(false);
@@ -65,7 +66,10 @@ export default function SubjectsPage() {
           <motion.button
             type="button"
             whileTap={{ scale: 0.9 }}
-            onClick={() => setAddOpen(true)}
+            onClick={() => {
+              vibrate("light");
+              setAddOpen(true);
+            }}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-raised"
             aria-label="Добавить предмет"
           >
@@ -84,7 +88,10 @@ export default function SubjectsPage() {
                 type="button"
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                onClick={() => setAddOpen(true)}
+                onClick={() => {
+                  vibrate("light");
+                  setAddOpen(true);
+                }}
                 className="rounded-full bg-accent-blue-bright px-4 py-2 text-[14px] font-medium text-white transition-colors hover:bg-accent-blue-bright-hover"
               >
                 Добавить первый предмет
